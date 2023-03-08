@@ -2,8 +2,8 @@ import IExcelBlob from "../types/IExcelBlob";
 import StorageHelper from "../helpers/StorageHelper";
 
 export default class ExcelDataService extends StorageHelper<IExcelBlob> {
-  constructor(userId: string) {
-    super(userId, "excelDocs");
+  constructor(vendorId: string) {
+    super(vendorId, "excelDocs");
   }
 
   getItemById = async (id: string): Promise<IExcelBlob> => {

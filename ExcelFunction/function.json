@@ -11,7 +11,7 @@
         "put",
         "delete"
       ],
-      "route": "user/{userId}/excel"
+      "route": "vendor/{vendorId}/user/{userId}/excel/{blobId?}"
     },
     {
       "type": "http",

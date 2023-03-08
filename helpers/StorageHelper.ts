@@ -5,11 +5,11 @@ import ICrudService from "../types/ICrudService";
 
 export default abstract class StorageHelper<T extends IStorageType> implements ICrudService<T> {
   private blobPath: string;
-  private userId: string;
+  private vendorId: string;
   private runLocal = true;
   private signInOptions = {
-    clientId: "06aed769-df6c-402e-972c-b0341045d873",
-    tenantId: "62653d6e-cd3a-42cf-9537-1c8e22abde27"
+    clientId: "06aed769-df6c-402e-972c-b0341045c873",
+    tenantId: "62653d6e-cd3a-42cf-9537-1c8e22abfe27"
   }
   private blobStorageClient =
     this.runLocal ?
@@ -22,9 +22,9 @@ export default abstract class StorageHelper<T extends IStorageType> implements I
         "https://nsbuddstr.blob.core.windows.net/",
         new DefaultAzureCredential(this.signInOptions));
 
-  constructor(userId: string, blobName: string) {
+  constructor(vendorId: string, blobName: string) {
     this.blobPath = blobName.concat("/");
-    this.userId = userId;
+    this.vendorId = vendorId;
   }
 
   private getBlobName = (id: string): string => {
@@ -32,13 +32,13 @@ export default abstract class StorageHelper<T extends IStorageType> implements I
   }
 
   private getContainer = async (): Promise<ContainerClient> => {
-    if (!this.userId) {
-      throw new EvalError("userId must be defined");
+    if (!this.vendorId) {
+      throw new EvalError("vendorId must be defined");
     }
 
-    let client = this.blobStorageClient.getContainerClient(this.userId);
+    let client = this.blobStorageClient.getContainerClient(this.vendorId);
     if (!await client.exists()) {
-      const response = await this.blobStorageClient.createContainer(this.userId);
+      const response = await this.blobStorageClient.createContainer(this.vendorId);
       client = response.containerClient;
     }
     return client;
@@ -136,8 +136,8 @@ export default abstract class StorageHelper<T extends IStorageType> implements I
   }
 
   purgeUserData = async (): Promise<void> => {
-    if (await this.blobStorageClient.getContainerClient(this.userId).exists()) {
-      await this.blobStorageClient.deleteContainer(this.userId);
+    if (await this.blobStorageClient.getContainerClient(this.vendorId).exists()) {
+      await this.blobStorageClient.deleteContainer(this.vendorId);
     }
   }
 
