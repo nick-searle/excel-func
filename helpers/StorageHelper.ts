@@ -8,8 +8,8 @@ export default abstract class StorageHelper<T extends IStorageType> implements I
   private vendorId: string;
   private runLocal = true;
   private signInOptions = {
-    clientId: "06aed769-df6c-402e-972c-b0341045c873",
-    tenantId: "62653d6e-cd3a-42cf-9537-1c8e22abfe27"
+    clientId: "06xed769-df6c-402e-972c-b0341045c873",
+    tenantId: "62x53d6e-cd3a-42cf-9537-1c8e22abfe27"
   }
   private blobStorageClient =
     this.runLocal ?

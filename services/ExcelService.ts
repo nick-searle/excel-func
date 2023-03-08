@@ -18,7 +18,7 @@ export default class ExcelService<T extends IPurchaseOrder> {
 
   // Persist object as excel file based on mapping
   // Returns base64 string of excel doc
-  public createFile = async (pageName: string, obj: T[], mapping: IColumnMap[]): Promise<IExce> => {
+  public createFile = async (pageName: string, obj: T[], mapping: IColumnMap[]): Promise<IExcelBlob> => {
     const workbook = new Excel.Workbook();
     const sheet = workbook.addWorksheet(pageName);
 
