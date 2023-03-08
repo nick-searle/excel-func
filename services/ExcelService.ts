@@ -44,6 +44,8 @@ export default class ExcelService<T extends IPurchaseOrder> {
     }
 
     const item = await this.excelDataService.persistItem(excelBlob);
+
+    this.writeExcelToFile(item);
       
     return item;
   }
@@ -52,8 +54,10 @@ export default class ExcelService<T extends IPurchaseOrder> {
     return await this.excelDataService.getItemById(id);
   }
 
-  public writeBufferToFile = (buffer: Buffer) => {
-    fs.appendFile("./test.xlsx", buffer, function (err) {
+  public writeExcelToFile = (excelBlob: IExcelBlob) => {
+    const buffer = Base64Buffer.decode(excelBlob.data);
+    
+    fs.appendFile("./test.xlsx", Buffer.from(buffer), function (err) {
       if (err) {
         throw err;
       }
