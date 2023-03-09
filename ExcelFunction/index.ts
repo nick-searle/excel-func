@@ -11,6 +11,14 @@ const checkOrders = (orders: IPurchaseOrder[]): boolean => {
 }
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
+  const pageName = "Purchase Orders";
+  const mapping: IColumnMap[] = [
+    { propName: 'id', columnName: 'Purchase Order ID', order: 1 },
+    { propName: 'apptDate', columnName: 'Appointment Date', order: 3 },
+    { propName: 'comment', columnName: 'Kroger Comment', order: 2 },
+    { propName: 'vendorComment', columnName: 'Vendor Comment', order: 4 },
+  ];
+
   try {
     if (!req.params.vendorId) {
       context.res = ResponseHelper.notFound();
@@ -20,11 +28,14 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     const excelService = new ExcelService<IPurchaseOrder>(req.params.userId, new ExcelDataService(req.params.vendorId));
     switch (req.method) {
       case "GET":
-        if (!req.body.blobId) {
+        if (!req.params.blobId) {
           context.res = ResponseHelper.badRequest("expected blobId");
           return;
         }
-        context.res = ResponseHelper.success(await excelService.getExcelFile(req.params.blobId));
+        const blob = await excelService.getExcelFile(req.params.blobId);
+        const orders = await excelService.getFromExcelFile(pageName, blob.data, mapping);
+
+        context.res = ResponseHelper.success(orders);
         return;
       case "POST":
       case "PUT":
@@ -37,13 +48,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
             context.res = ResponseHelper.badRequest("vendorComment should not be set");
             return;
         }
-        const mapping: IColumnMap[] = [
-          { propName: 'id', columnName: 'Purchase Order ID', order: 1 },
-          { propName: 'apptDate', columnName: 'Appointment Date', order: 3 },
-          { propName: 'comment', columnName: 'Kroger Comment', order: 2 },
-          { propName: 'vendorComment', columnName: 'Vendor Comment', order: 4 },
-        ];
-        context.res = ResponseHelper.success(await excelService.createFile("Purchase Orders", request.orders, mapping));
+        context.res = ResponseHelper.success(await excelService.createFile(pageName, request.orders, mapping));
         return;
     //   case "DELETE": AT YOUR OWN RISK
     //     if (!req.params.id) {
